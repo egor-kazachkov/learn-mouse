@@ -4,14 +4,23 @@ import random
 from PIL import Image, ImageTk
 from subprocess import call, PIPE
 import os, os.path
-#import sdl2.sdlmixer as mixer
+
+IMAGES_DIR = os.path.join(os.path.dirname(__file__), "images")
+
+MODE_MOTION_NAME = u"Тренировать движение" # train motion in Russian 
+MODE_CLICK_NAME = u"Тренировать клики" # train clicks in Russian
+
+SOUND_PLAYER = "gst-play-1.0"
+SOUNDS = ["/usr/share/sounds/freedesktop/stereo/bell.oga",
+          "/usr/share/sounds/ubuntu/stereo/bell.ogg",
+          "/usr/share/sounds/ubuntu/stereo/message.ogg",
+]
+
 
 class App():
     bg_color = "#ffffff"
     MODE_MOTION = 1
     MODE_CLICK = 2
-    MODE_MOTION_NAME = u"Тренировать движение" # train motion in Russian 
-    MODE_CLICK_NAME = u"Тренировать клики" # train clicks in Russian
 
     def __init__(self, master):
         self.master = master
@@ -36,7 +45,6 @@ class App():
 
         self.index = None
         self.mode = None
-        #self.show()
         self.select_mode()
         self.master.mainloop()
 
@@ -64,7 +72,7 @@ class App():
             self.button_motion.destroy()
             self.button_click.destroy()
         elif event.widget == self.label:
-            call(["gst-play-1.0", self.sounds[random.randrange(0, len(self.sounds))]], stdout=PIPE)
+            call([SOUND_PLAYER, self.sounds[random.randrange(0, len(self.sounds))]], stdout=PIPE)
         self.show()
 
     def onenter(self, event):
@@ -76,15 +84,11 @@ class App():
         self.master.destroy()
 
     def init_images(self):
-        images_dir = os.path.join(os.path.dirname(__file__), "images")
-        images = os.listdir(images_dir)
-        self.images = [ImageTk.PhotoImage(Image.open(os.path.join(images_dir,x))) for x in images]
+        images = os.listdir(IMAGES_DIR)
+        self.images = [ImageTk.PhotoImage(Image.open(os.path.join(IMAGES_DIR,x))) for x in images]
 
     def init_sounds(self):
-        self.sounds = ["/usr/share/sounds/freedesktop/stereo/bell.oga",
-                       "/usr/share/sounds/ubuntu/stereo/bell.ogg",
-                       "/usr/share/sounds/ubuntu/stereo/message.ogg",
-        ]
+        self.sounds = SOUNDS # TODO: make it similar to images?
 
 
 ### main ###
